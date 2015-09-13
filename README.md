@@ -20,7 +20,7 @@ Install pi2mqtt:
 ## Usage
 
 ````
-Usage: pi2mqtt [options]
+Usage: rpi2mqtt [options]
 
 Options:
   -c, --config         use config file                                                          [default: "~/.pi2mqtt/config.json"]
@@ -61,9 +61,9 @@ Example input ```<prefix>/status/gpio/<gpio-number>```
 ### Aliases
 
 You can set individual topics with the --alias option.   
-Example: ```pi2mqtt -a w1/28-000005908b0e:"Temperature/Garden"```
+Example: ```rpi2mqtt -a w1/28-000005908b0e:"Temperature/Garden"```
 
-Mind that aliases don't affect the configured prefix. So ```pi2mqtt -o 17 -a gpio/17:Garden -t Light``` would result in topic ```Light/Garden``` for GPIO17
+Mind that aliases don't affect the configured prefix. So ```rpi2mqtt -o 17 -a gpio/17:Garden -t Light``` would result in topic ```Light/Garden``` for GPIO17
 
 ### Ideas/Todo
 
