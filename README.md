@@ -1,4 +1,4 @@
-# pi2mqtt
+# rpi2mqtt
 
 Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
 

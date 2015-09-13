@@ -3,7 +3,7 @@
   "description": "Connect a RaspberryPi 1-Wire and GPIOs to MQTT",
   "author": "Sebastian 'Hobbyquaker' Raff <hq@ccu.io>",
   "license": "MIT",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "preferGlobal": true,
   "bin": {
     "rpi2mqtt": "./index.js"
