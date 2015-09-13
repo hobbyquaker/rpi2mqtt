@@ -14,7 +14,7 @@ sudo dpkg -i node_latest_armhf.deb
 ````
 
 Install pi2mqtt:
-```sudo npm install -g pi2mqtt```
+```sudo npm install -g rpi2mqtt```
 
 
 ## Usage
