@@ -3,18 +3,18 @@
   "description": "Connect a RaspberryPi 1-Wire and GPIOs to MQTT",
   "author": "Sebastian 'Hobbyquaker' Raff <hq@ccu.io>",
   "license": "MIT",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "preferGlobal": true,
   "bin": {
     "rpi2mqtt": "./index.js"
   },
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^2.0.1",
     "daemon": "^1.1.0",
-    "mkdirp": "^0.5.0",
-    "mqtt": "^0.3.13",
-    "onoff": "^1.0.0",
-    "yargs": "^1.3.3"
+    "mkdirp": "^0.5.1",
+    "mqtt": "^1.14.1",
+    "onoff": "^1.1.1",
+    "yargs": "^5.0.0"
   },
   "keywords": [
     "mqtt",
