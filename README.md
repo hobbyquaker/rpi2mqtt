@@ -2,8 +2,7 @@
 
 [![License][mit-badge]][mit-url]
 [![NPM version](https://badge.fury.io/js/rpi2mqtt.svg)](http://badge.fury.io/js/rpi2mqtt)
-[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/rpi2mqtt.svg)](https://gemnasium.com/github.com/hobbyquaker/rpi2mqtt)
-
+[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/rpi2mqtt.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/rpi2mqtt)
 
 Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
 
