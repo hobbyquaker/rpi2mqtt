@@ -1,5 +1,10 @@
 # rpi2mqtt
 
+[![License][mit-badge]][mit-url]
+[![NPM version](https://badge.fury.io/js/rpi2mqtt.svg)](http://badge.fury.io/js/rpi2mqtt)
+[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/rpi2mqtt.svg)](https://gemnasium.com/github.com/hobbyquaker/rpi2mqtt)
+
+
 Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
 
 
@@ -76,4 +81,5 @@ Mind that aliases don't affect the configured prefix. So ```rpi2mqtt -o 17 -a gp
 MIT
 Copyright (c) 2015 Sebastian 'hobbyquaker' Raff <hq@ccu.io>
 
-
+[mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
+[mit-url]: LICENSE
