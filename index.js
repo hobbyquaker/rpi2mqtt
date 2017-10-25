@@ -81,7 +81,7 @@ var yargs = require('yargs')
         if (argv.payload !== 'plain' && argv.payload !== 'json')        throw 'Error: payload type must be "plain" or "json"';
         if (typeof argv.w1Interval !== 'number' || argv.w1Interval < 1) throw 'Error: w1-interval has be a number greater than 0';
         if (typeof argv.w1Wait !== 'number')                            throw 'Error: w1-wait has to be a number';
-
+        return true;
     });
 
 var config = yargs.argv;
