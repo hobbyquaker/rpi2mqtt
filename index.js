@@ -9,6 +9,7 @@ const daemon = require('daemon');
 
 const Gpio = require('onoff').Gpio;
 const Mqtt = require('mqtt');
+const log = require('yalm');
 
 const pkg = require('./package.json');
 
@@ -19,70 +20,10 @@ if (!config.debug) {
 }
 
 if (config.debug) {
-    config.verbosity = 'debug';
+    log.setLevel('debug');
 }
 
-/*
-        Log
- */
-const log = {
-    debug(msg) {
-        if (config.verbosity === 'debug') {
-            log.log(msg);
-        }
-    },
-    info(msg) {
-        if (config.verbosity !== 'error') {
-            log.log(msg);
-        }
-    },
-    err(msg) {
-        log.log(msg);
-    },
-    log(msg) {
-        if (config.debug) {
-            console.log(msg);
-        }
-        fs.appendFile(config.log, formatDate() + ' ' + msg + '\n', () => {
-            // TODO
-        });
-    }
-};
-
-if (typeof config.log === 'string' && config.log !== '') {
-    // Var logfile =
-    const homedir = process.env.HOME;
-    let logpath = path.dirname(config.log);
-    const logfile = path.basename(config.log);
-    if (logpath.slice(0, 2) === '~/') {
-        logpath = homedir + '/' + logpath.slice(2);
-    }
-    logpath = path.resolve(logpath);
-    config.log = logpath + '/' + logfile;
-    if (!fs.existsSync(logpath)) {
-        mkdirp(logpath, err => {
-            if (err) {
-                // TODO
-            } else {
-                log.debug('created folder ' + logpath);
-            }
-        });
-    }
-}
-
-function formatDate(dateObj) {
-    if (!dateObj) {
-        dateObj = new Date();
-    }
-    return dateObj.getFullYear() + '-' +
-        ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-        ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-        ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-        ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
-}
-
-log.log('pi2mqtt ' + (config.debug ? '' : 'daemon ') + 'version ' + pkg.version + ' started with pid ' + process.pid);
+log.info('rpi2mqtt ' + (config.debug ? '' : 'daemon ') + 'version ' + pkg.version + ' started with pid ' + process.pid);
 
 /*
         MQTT
@@ -304,7 +245,7 @@ if (!config.w1Disable) {
         Stop process
  */
 function stop(signal) {
-    log.log('got ' + signal + ' - terminating.');
+    log.info('got ' + signal + ' - terminating.');
 
     // Todo unexport GPIOs?
 
