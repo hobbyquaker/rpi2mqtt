@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
-const mkdirp = require('mkdirp');
 
 const async = require('async');
-const daemon = require('daemon');
 
 const Gpio = require('onoff').Gpio;
 const Mqtt = require('mqtt');
@@ -15,19 +12,11 @@ const pkg = require('./package.json');
 
 const config = require('./config.js');
 
-if (!config.debug) {
-    daemon({stdout: process.stdout, stderr: process.stderr});
-}
-
 if (config.debug) {
     log.setLevel('debug');
 }
 
-log.info('rpi2mqtt ' + (config.debug ? '' : 'daemon ') + 'version ' + pkg.version + ' started with pid ' + process.pid);
-
-/*
-        MQTT
- */
+log.info('rpi2mqtt version ' + pkg.version + ' started with pid ' + process.pid);
 
 if (typeof config.statusTopic !== 'string') {
     config.topic = '';

@@ -26,7 +26,6 @@ module.exports = require('yargs')
     .example('$0 -t -o 17 -a w1/28-0000002981762:"Temperature/Garden" -a gpio/17:Light/Garden', 'Use 1-wire and GPIO17 as output. Set mqtt topic aliases and remove topic prefix')
 
     .alias({
-        d: 'debug',
         h: 'help',
         c: 'config',
         l: 'log',
