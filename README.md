@@ -3,21 +3,19 @@
 [![License][mit-badge]][mit-url]
 [![NPM version](https://badge.fury.io/js/rpi2mqtt.svg)](http://badge.fury.io/js/rpi2mqtt)
 [![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/rpi2mqtt.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/rpi2mqtt)
+[![Build Status](https://travis-ci.org/hobbyquaker/rpi2mqtt.svg?branch=master)](https://travis-ci.org/hobbyquaker/rpi2mqtt)
+[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![License][mit-badge]][mit-url]
 
-Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
+> Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
 
 
 ## Install
 
-Tested on Raspbian Wheezy
+Prerequisites - Node.js and npm Installation. I suggest to use https://github.com/tj/n to install a recent version of
+Node.js.  
 
-Prerequisites - Node.js and npm Installation:    
-````
-wget http://node-arm.herokuapp.com/node_latest_armhf.deb  
-sudo dpkg -i node_latest_armhf.deb
-````
-
-Install pi2mqtt:
+Install rpi2mqtt:
 ```sudo npm install -g rpi2mqtt```
 
 
@@ -78,7 +76,7 @@ Mind that aliases don't affect the configured prefix. So ```rpi2mqtt -o 17 -a gp
 ## License
 
 MIT
-Copyright (c) 2015 Sebastian 'hobbyquaker' Raff <hq@ccu.io>
+Copyright (c) Sebastian
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
 [mit-url]: LICENSE
