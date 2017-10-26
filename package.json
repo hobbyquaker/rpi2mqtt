@@ -11,6 +11,9 @@
   "bin": {
     "rpi2mqtt": "./index.js"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "dependencies": {
     "async": "^2.5.0",
     "daemon": "^1.1.0",

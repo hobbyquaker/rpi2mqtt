@@ -12,7 +12,7 @@
 
 ## Install
 
-Prerequisites - Node.js and npm Installation. I suggest to use https://github.com/tj/n to install a recent version of
+Prerequisite: Node.js version 6.0 or above. I suggest to use https://github.com/tj/n to install a recent version of
 Node.js.  
 
 Install rpi2mqtt:
