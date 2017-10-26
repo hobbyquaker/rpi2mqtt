@@ -6,7 +6,7 @@
     "Tobias Liebig http://etobi.de"
   ],
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "preferGlobal": true,
   "bin": {
     "rpi2mqtt": "./index.js"
