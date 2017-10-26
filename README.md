@@ -6,7 +6,7 @@
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License][mit-badge]][mit-url]
 
-> Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT
+> Connect RaspberryPi GPIOs and 1-Wire temperature sensors to MQTT 🍰🔘📡
 
 
 ## Install
