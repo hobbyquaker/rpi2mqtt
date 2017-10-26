@@ -1,6 +1,5 @@
 # rpi2mqtt
 
-[![License][mit-badge]][mit-url]
 [![NPM version](https://badge.fury.io/js/rpi2mqtt.svg)](http://badge.fury.io/js/rpi2mqtt)
 [![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/rpi2mqtt.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/rpi2mqtt)
 [![Build Status](https://travis-ci.org/hobbyquaker/rpi2mqtt.svg?branch=master)](https://travis-ci.org/hobbyquaker/rpi2mqtt)
@@ -18,7 +17,7 @@ Node.js.
 Install rpi2mqtt:
 `$ sudo npm install -g rpi2mqtt`
 
-To run rpi2mqtt in background an start on system boot I suggest to use [PM2](https://github.com/Unitech/pm2).
+To run rpi2mqtt in background and start on system boot I suggest to use [PM2](https://github.com/Unitech/pm2).
 
 
 ## Usage
