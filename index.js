@@ -81,7 +81,7 @@ var yargs = require('yargs')
         if (argv.payload !== 'plain' && argv.payload !== 'json')        throw 'Error: payload type must be "plain" or "json"';
         if (typeof argv.w1Interval !== 'number' || argv.w1Interval < 1) throw 'Error: w1-interval has be a number greater than 0';
         if (typeof argv.w1Wait !== 'number')                            throw 'Error: w1-wait has to be a number';
-
+        return true;
     });
 
 var config = yargs.argv;
@@ -290,17 +290,18 @@ if (config.output) {
  */
 
 var w1Devices = {
-    28: []
+    28: [],
+    10: []
 };
 
 var values = {};
 
-function w1Poll28() {
-    async.map(w1Devices[28], w1Read28, function (err, results) {
-        for (var i = 0; i < w1Devices[28].length; i++) {
-            if (!results[i] || values[w1Devices[28][i]] == results[i]) continue;
-            values[w1Devices[28][i]] = results[i];
-            var topic = config.statusTopic + alias('w1/' + w1Devices[28][i]);
+function w1Poll(prefix) {
+    async.map(w1Devices[prefix], w1Read, function (err, results) {
+        for (var i = 0; i < w1Devices[prefix].length; i++) {
+            if (!results[i] || values[w1Devices[prefix][i]] == results[i]) continue;
+            values[w1Devices[prefix][i]] = results[i];
+            var topic = config.statusTopic + alias('w1/' + w1Devices[prefix][i]);
             var payload;
             switch (config.payload) {
                 case 'json':
@@ -316,7 +317,7 @@ function w1Poll28() {
     });
 }
 
-function w1Read28(sensor, cb) {
+function w1Read(sensor, cb) {
     fs.readFile('/sys/bus/w1/devices/' + sensor + '/w1_slave', function (err, res) {
         var tmp;
         if (!err && (tmp = res.toString().match(/YES\n[0-9a-f\s]+t=([0-9]+)\n/))) {
@@ -342,10 +343,16 @@ if (!config.w1Disable) {
                     if (res[i].match(/^28-/)) {
                         w1Devices[28].push(res[i]);
                     }
+                    if (res[i].match(/^10-/)) {
+                        w1Devices[10].push(res[i]);
+                    }
                 }
-                log.info('found ' + w1Devices[28].length + ' 1-Wire Temperature Sensors. Polling Interval '+ config.w1Interval + ' seconds');
-                setInterval(w1Poll28, config.w1Interval * 1000);
-                if (config.w1Interval > 5) w1Poll28();
+                log.info('found ' + (w1Devices[28].length + w1Devices[10].length) + ' 1-Wire Temperature Sensors. Polling Interval '+ config.w1Interval + ' seconds');
+                setInterval(function(){w1Poll(28);w1Poll(10);}, config.w1Interval * 1000);
+                if (config.w1Interval > 5) {
+                        w1Poll(28);
+                        w1Poll(10);
+                }
             } else {
                 log.err('error reading dir /sys/bus/w1/devices', err);
                 process.exit(1);
