@@ -7,6 +7,9 @@ const mkdirp = require('mkdirp');
 const async = require('async');
 const daemon = require('daemon');
 
+const Gpio = require('onoff').Gpio;
+const Mqtt = require('mqtt');
+
 const pkg = require('./package.json');
 
 const config = require('./config.js');
@@ -22,40 +25,7 @@ if (config.debug) {
 /*
         Log
  */
-if (typeof config.log === 'string' && typeof config.log !== '') {
-    // Var logfile =
-    const homedir = process.env.HOME;
-    let logpath = path.dirname(config.log);
-    const logfile = path.basename(config.log);
-    if (logpath.slice(0, 2) == '~/') {
-        logpath = homedir + '/' + logpath.slice(2);
-    }
-    logpath = path.resolve(logpath);
-    config.log = logpath + '/' + logfile;
-    if (!fs.existsSync(logpath)) {
-        mkdirp(logpath, err => {
-            if (!err) {
-                log.debug('created folder ' + logpath);
-            } else {
-                // TODO
-            }
-        });
-    }
-}
-
-function formatDate(dateObj) {
-    if (!dateObj) {
-        dateObj = new Date();
-    }
-    return dateObj.getFullYear() + '-' +
-        ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-        ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-        ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-        ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
-}
-
-var log = {
+const log = {
     debug(msg) {
         if (config.verbosity === 'debug') {
             log.log(msg);
@@ -73,18 +43,50 @@ var log = {
         if (config.debug) {
             console.log(msg);
         }
-        fs.appendFile(config.log, formatDate() + ' ' + msg + '\n', err => {
+        fs.appendFile(config.log, formatDate() + ' ' + msg + '\n', () => {
             // TODO
         });
     }
 };
+
+if (typeof config.log === 'string' && config.log !== '') {
+    // Var logfile =
+    const homedir = process.env.HOME;
+    let logpath = path.dirname(config.log);
+    const logfile = path.basename(config.log);
+    if (logpath.slice(0, 2) === '~/') {
+        logpath = homedir + '/' + logpath.slice(2);
+    }
+    logpath = path.resolve(logpath);
+    config.log = logpath + '/' + logfile;
+    if (!fs.existsSync(logpath)) {
+        mkdirp(logpath, err => {
+            if (err) {
+                // TODO
+            } else {
+                log.debug('created folder ' + logpath);
+            }
+        });
+    }
+}
+
+function formatDate(dateObj) {
+    if (!dateObj) {
+        dateObj = new Date();
+    }
+    return dateObj.getFullYear() + '-' +
+        ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
+        ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
+        ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
+        ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
+}
 
 log.log('pi2mqtt ' + (config.debug ? '' : 'daemon ') + 'version ' + pkg.version + ' started with pid ' + process.pid);
 
 /*
         MQTT
  */
-const mqtt = require('mqtt');
 
 if (typeof config.statusTopic !== 'string') {
     config.topic = '';
@@ -102,7 +104,7 @@ if (config.setTopic !== '' && !config.setTopic.match(/\/$/)) {
 
 log.debug('connecting ' + config.url);
 
-let client;
+let mqtt;
 let testamentPayload;
 let connectPayload;
 
@@ -115,10 +117,10 @@ if (config.payload === 'json') {
 }
 
 if (config.testamentTopic && config.testamentTopic !== '') {
-    client = mqtt.connect(config.url, {will: {topic: config.testamentTopic, payload: testamentPayload}});
-    client.publish(config.testamentTopic, connectPayload);
+    mqtt = Mqtt.connect(config.url, {will: {topic: config.testamentTopic, payload: testamentPayload}});
+    mqtt.publish(config.testamentTopic, connectPayload);
 } else {
-    client = mqtt.connect(config.url);
+    mqtt = Mqtt.connect(config.url);
 }
 
 const aliases = {};
@@ -128,7 +130,7 @@ if (typeof config.alias === 'string' && config.alias !== '') {
 }
 
 if (config.alias) {
-    for (var i = 0; i < config.alias.length; i++) {
+    for (let i = 0; i < config.alias.length; i++) {
         const tmp = config.alias[i].split(':');
         aliases[tmp[0]] = tmp[1];
         aliases[tmp[1]] = tmp[0];
@@ -142,11 +144,6 @@ function alias(topic) {
     return topic;
 }
 
-/*
-        GPIOs
- */
-const Gpio = require('onoff').Gpio;
-
 const io = {};
 
 const inputState = {};
@@ -155,28 +152,25 @@ if (config.input) {
     if (typeof config.input === 'number') {
         config.input = [config.input];
     }
-    for (var i = 0; i < config.input.length; i++) {
+    for (let i = 0; i < config.input.length; i++) {
         io[config.input[i]] = new Gpio(config.input[i], 'in', 'both');
-        (function () {
-            const _i = i;
-            io[config.input[_i]].watch((err, val) => {
-                let payload;
-                if (!err) {
-                    switch (config.payload) {
-                        case 'json':
-                            payload = JSON.stringify({val: !val, ack: true});
-                            break;
-                        default:
-                            payload = String(1 - val);
-                    }
-                    if (inputState[_i] !== val) {
-                        inputState[_i] = val;
-                        log.debug(config.statusTopic + alias('gpio/' + config.input[_i]) + ' ' + payload);
-                        client.publish(config.statusTopic + alias('gpio/' + config.input[_i]), payload, {retain: Boolean(config.retain)});
-                    }
+        io[config.input[i]].watch((err, val) => {
+            let payload;
+            if (!err) {
+                switch (config.payload) {
+                    case 'json':
+                        payload = JSON.stringify({val: !val, ack: true});
+                        break;
+                    default:
+                        payload = String(1 - val);
                 }
-            });
-        })();
+                if (inputState[i] !== val) {
+                    inputState[i] = val;
+                    log.debug(config.statusTopic + alias('gpio/' + config.input[i]) + ' ' + payload);
+                    mqtt.publish(config.statusTopic + alias('gpio/' + config.input[i]), payload, {retain: Boolean(config.retain)});
+                }
+            }
+        });
     }
 }
 
@@ -185,32 +179,32 @@ if (config.output) {
         config.output = [config.output];
     }
 
-    for (var i = 0; i < config.output.length; i++) {
+    for (let i = 0; i < config.output.length; i++) {
         io[config.output[i]] = new Gpio(config.output[i], 'out');
         const topic = config.setTopic + alias('gpio/' + config.output[i]);
         log.debug('mqtt subscribe ' + topic);
-        client.subscribe(topic);
+        mqtt.subscribe(topic);
     }
 
     const rx = new RegExp(config.setTopic + 'gpio/([0-9]+)');
 
-    client.on('message', (topic, message) => {
+    mqtt.on('message', (topic, message) => {
         topic = config.setTopic + alias(topic.slice(config.setTopic.length));
 
         log.debug('mqtt < ' + topic + ' ' + message);
-        var tmp;
-        if (tmp = topic.match(rx)) {
+        let tmp = topic.match(rx);
+        if (tmp) {
             const id = parseInt(tmp[1], 10);
             if (config.output.indexOf(id) !== -1) {
                 let val;
                 try {
-                    var tmp = JSON.parse(message);
+                    tmp = JSON.parse(message);
                     if (typeof tmp.val === 'undefined') {
-                        throw 'attribute val missing';
+                        throw new TypeError('attribute val missing');
                     } else {
                         val = Boolean(tmp.val);
                     }
-                } catch (e) {
+                } catch (err) {
                     if (message === 'false') {
                         val = false;
                     } else if (message === 'true') {
@@ -242,12 +236,12 @@ const values = {};
 function w1Poll(prefix) {
     async.map(w1Devices[prefix], w1Read, (err, results) => {
         for (let i = 0; i < w1Devices[prefix].length; i++) {
-            if (!results[i] || values[w1Devices[prefix][i]] == results[i]) {
+            if (!results[i] || values[w1Devices[prefix][i]] === results[i]) {
                 continue;
             }
             values[w1Devices[prefix][i]] = results[i];
             const topic = config.statusTopic + alias('w1/' + w1Devices[prefix][i]);
-            var payload;
+            let payload;
             switch (config.payload) {
                 case 'json':
                     payload = JSON.stringify({val: results[i]});
@@ -257,7 +251,7 @@ function w1Poll(prefix) {
 
             }
             log.debug(topic + ' ' + payload);
-            client.publish(topic, payload, {retain: Boolean(config.retain)});
+            mqtt.publish(topic, payload, {retain: Boolean(config.retain)});
         }
     });
 }
@@ -280,18 +274,19 @@ if (!config.w1Disable) {
 
     setTimeout(() => {
         fs.readdir('/sys/bus/w1/devices/', (err, res) => {
-            if (!err && res.length) {
+            if (!err && res.length > 0) {
                 for (let i = 0; i < res.length; i++) {
-                    if (res[i].match(/^28-/)) {
+                    if (res[i].startsWith('28-')) {
                         w1Devices[28].push(res[i]);
                     }
-                    if (res[i].match(/^10-/)) {
+                    if (res[i].startsWith('10-')) {
                         w1Devices[10].push(res[i]);
                     }
                 }
                 log.info('found ' + (w1Devices[28].length + w1Devices[10].length) + ' 1-Wire Temperature Sensors. Polling Interval ' + config.w1Interval + ' seconds');
                 setInterval(() => {
-                    w1Poll(28); w1Poll(10);
+                    w1Poll(28);
+                    w1Poll(10);
                 }, config.w1Interval * 1000);
                 if (config.w1Interval > 5) {
                     w1Poll(28);
@@ -314,11 +309,11 @@ function stop(signal) {
     // Todo unexport GPIOs?
 
     try {
-        client.end(() => {
+        mqtt.end(() => {
             log.debug('mqtt disconncted');
             process.exit(0);
         });
-    } catch (e) {}
+    } catch (err) {}
 
     setTimeout(() => {
         process.exit(0);
