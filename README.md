@@ -16,7 +16,9 @@ Prerequisite: Node.js version 6.0 or above. I suggest to use https://github.com/
 Node.js.  
 
 Install rpi2mqtt:
-```sudo npm install -g rpi2mqtt```
+`$ sudo npm install -g rpi2mqtt`
+
+To run rpi2mqtt in background an start on system boot I suggest to use [PM2](https://github.com/Unitech/pm2).
 
 
 ## Usage
@@ -28,7 +30,6 @@ Options:
   -c, --config         use config file                                                          [default: "~/.pi2mqtt/config.json"]
   -l, --log            log to file                                                              [default: "~/.pi2mqtt/daemon.log"]
   -v, --verbosity      possible values: "error", "info", "debug"                                [default: "error"]
-  -d, --debug          don't fork into background and log to stdout. implies --verbosity debug
   -a, --alias          alias topics. can be used multiple times. See examples                 
   -i, --in, --input    use gpio as input. can be used multiple times. See examples            
   -o, --out, --output  use gpio as output. can be used multiple times. See examples           
@@ -75,8 +76,7 @@ Mind that aliases don't affect the configured prefix. So ```rpi2mqtt -o 17 -a gp
 
 ## License
 
-MIT
-Copyright (c) Sebastian
+MIT Copyright (c) Sebastian Raff
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
 [mit-url]: LICENSE
