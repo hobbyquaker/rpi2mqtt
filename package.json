@@ -2,8 +2,11 @@
   "name": "rpi2mqtt",
   "description": "Connect a RaspberryPi 1-Wire and GPIOs to MQTT",
   "author": "Sebastian 'Hobbyquaker' Raff <hq@ccu.io>",
+  "contributors": [
+    "Tobias Liebig http://etobi.de"
+  ],
   "license": "MIT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "preferGlobal": true,
   "bin": {
     "rpi2mqtt": "./index.js"
