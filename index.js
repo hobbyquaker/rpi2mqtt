@@ -128,25 +128,36 @@ if (config.output) {
             if (config.output.indexOf(id) !== -1) {
                 let val;
                 try {
-                    tmp = JSON.parse(message);
+                    let tmp = JSON.parse(message);
                     if (typeof tmp.val === 'undefined') {
                         throw new TypeError('attribute val missing');
                     } else {
                         val = Boolean(tmp.val);
                     }
                 } catch (err) {
-                    if (message === 'false') {
+                    log.debug('message does not look like json: ' + err);
+                }
+                
+                if (typeof val === 'undefined') {
+                    let tmp = message.toString();
+                    if (tmp === 'false') {
                         val = false;
-                    } else if (message === 'true') {
+                    } else if (tmp === 'true') {
                         val = true;
-                    } else if (typeof message === 'string') {
-                        val = parseInt(message, 10) || false;
                     } else {
-                        val = Boolean(message);
+                        let int = parseInt(tmp, 10);
+			if (!isNaN(int))
+                          val = int
                     }
                 }
-                val = val ? 1 : 0;
-                io[id].writeSync(val);
+                
+                if (typeof val !== 'undefined') {
+                    val = val ? 1 : 0;
+                    log.debug('setting gpio ' + id + ' to ' + val);
+                    io[id].writeSync(val);
+                } else {
+                    log.debug('could not parse gpio value');
+                }
             }
         }
     });
